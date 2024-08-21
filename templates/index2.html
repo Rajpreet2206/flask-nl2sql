@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NL2SQL Wizard - Natural Language to SQL</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="container-fluid bg-dark text-light py-4">
+        <div class="container">
+            <h1 class="text-center mb-4">NL2SQL</h1>
+            <p class="text-center mb-5">Effortlessly convert natural language to SQL queries</p>
+            <form method="POST" action="/">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 mb-4">
+                        <div class="input-group">
+                            <textarea class="form-control" id="query" name="query" rows="3" placeholder="Enter your query" required>{{ request.form.get('query', '') }}</textarea>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-magic"></i> Convert
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            {% if sql_query %}
+            <div class="row justify-content-center mt-5">
+                <div class="col-lg-8">
+                    <div class="card bg-light text-dark">
+                        <div class="card-header">
+                            <h3>SQL Query</h3>
+                        </div>
+                        <div class="card-body">
+                            <pre><code>{{ sql_query }}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if results %}
+            <div class="row justify-content-center mt-5">
+                <div class="col-lg-8">
+                    <div class="card bg-light text-dark">
+                        <div class="card-header">
+                            <h3>Results</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if results[0] is mapping %}
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            {% for col in results[0].keys() %}
+                                                <th>{{ col }}</th>
+                                            {% endfor %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in results %}
+                                            <tr>
+                                                {% for value in row.values() %}
+                                                    <td>{{ value }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <p>{{ results }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if error %}
+            <div class="row justify-content-center mt-5">
+                <div class="col-lg-8">
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
